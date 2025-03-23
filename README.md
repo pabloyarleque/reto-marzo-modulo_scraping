@@ -57,7 +57,7 @@ http://localhost:8080
 
 - Se convierte la imagen a **Base64**.
 - Se envía la imagen a la **API de Gemini** junto con la consulta:  
-  *"¿Es este empaque flexible?"*.
+  *"Analiza la imagen proporcionada y determina si el empaque es flexible o rígido.Un empaque flexible es aquel hecho de materiales como plástico delgado, bolsas resellables, papel aluminio o films plásticos. Un empaque rígido es aquel que mantiene su forma, como botellas de plástico grueso, cajas de cartón o frascos de vidrio.¿Es este empaque flexible?"*.
 - Se recibe una respuesta que indica si el empaque es **flexible** o **no**.
 
 ### 3. Almacenamiento de datos
