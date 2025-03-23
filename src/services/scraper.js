@@ -11,23 +11,23 @@ export async function scrapeTottus() {
     const urlBase = 'https://tottus.falabella.com.pe/tottus-pe/category/cat13380487/Despensa?subdomain=tottus&page=1&store=tottus';
     await page.goto(urlBase, { waitUntil: 'networkidle2' });
 
-    // 📌 Obtener el número total de páginas
+
     const totalPages = await page.evaluate(() => {
         const paginationButtons = [...document.querySelectorAll('.pagination-item-mkp')];
         const lastPageButton = paginationButtons[paginationButtons.length - 1];
         return lastPageButton ? parseInt(lastPageButton.innerText.trim(), 10) : 1;
     });
 
-    console.log(`📌 Se detectaron ${totalPages} páginas en la categoría.`);
+    console.log(`Se detectaron ${totalPages} páginas en la categoría.`);
 
     for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
-        const page = await browser.newPage(); // Abre nueva pestaña
+        const page = await browser.newPage(); 
         const url = `https://tottus.falabella.com.pe/tottus-pe/category/cat13380487/Despensa?subdomain=tottus&page=${currentPage}&store=tottus`;
-        console.log(`📄 Abriendo pestaña para la página: ${currentPage}`);
+        console.log(`Abriendo pestaña para la página: ${currentPage}`);
 
         await page.goto(url, { waitUntil: 'networkidle2' });
 
-        // 📌 Hacer scroll hasta el final de la página para cargar imágenes
+        // Hacer scroll 
         let prevHeight = 0;
         while (true) {
             let newHeight = await page.evaluate(() => {
@@ -41,7 +41,7 @@ export async function scrapeTottus() {
             await new Promise(resolve => setTimeout(resolve, 1500)); // ⏳ Espera tras scroll
         }
 
-        // 📌 Forzar carga de imágenes lazy-load
+        // Forzar carga de imágenes lazy-load
         await page.evaluate(() => {
             document.querySelectorAll('img').forEach(img => {
                 if (img.getAttribute('data-src')) {
@@ -50,7 +50,6 @@ export async function scrapeTottus() {
             });
         });
 
-        // 📌 Asegurar que todas las imágenes están visibles antes de extraer datos
         await page.waitForSelector('.jsx-1996933093 img', { visible: true });
         try {
             await page.waitForFunction(() => {
@@ -58,12 +57,11 @@ export async function scrapeTottus() {
                     .every(img => img.complete && img.naturalHeight > 0);
             }, { timeout: 60000 }); 
         } catch (error) {
-            console.warn(`⚠️ Advertencia: No se pudieron cargar todas las imágenes en la página ${currentPage}`);
+            console.warn(`Advertencia: No se pudieron cargar todas las imágenes en la página ${currentPage}`);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 3000)); // ⏳ Espera extra para carga
+        await new Promise(resolve => setTimeout(resolve, 3000)); 
 
-        // 📌 Extraer datos de productos
         const productosPagina = await page.evaluate(() => {
             return Array.from(document.querySelectorAll('.pod-link')).map(producto => ({
                 nombre: producto.querySelector('.pod-subTitle')?.innerText.trim(),
@@ -75,21 +73,20 @@ export async function scrapeTottus() {
             }));
         });
 
-        // 📌 Verificar imágenes antes de enviarlas a la IA
         await Promise.all(productosPagina.map(async (producto) => {
             if (!producto.imagen || !producto.imagen.startsWith("http")) {
-                console.warn(`⚠️ Imagen no válida para: ${producto.nombre}`);
+                console.warn(`Imagen no válida para: ${producto.nombre}`);
                 producto.es_flexible = null;
                 return;
             }
-            await new Promise(resolve => setTimeout(resolve, 500)); // ⏳ Espera antes de análisis
+            await new Promise(resolve => setTimeout(resolve, 500)); 
             producto.es_flexible = await analizarImagenGemini(producto.imagen);
         }));
 
         productos = productos.concat(productosPagina);
-        console.log(`✅ Página ${currentPage}: ${productosPagina.length} productos procesados`);
+        console.log(`Página ${currentPage}: ${productosPagina.length} productos procesados`);
 
-        await page.close(); // Cierra la pestaña después de procesar la página
+        await page.close(); 
     }
 
     try {
@@ -97,7 +94,6 @@ export async function scrapeTottus() {
         return productos; 
     } finally {
         await browser.close();
-        console.log("✅ Scraping completado. Cerrando proceso...");
         process.exit(0);
     }
 }
