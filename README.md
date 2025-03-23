@@ -33,5 +33,39 @@ Si todo está bien, verás el siguiente mensaje en consola:
 🚀 Servidor Express escuchando en http://localhost:8080
 ```
 
+Para scrapear productos, en el navegador:
+
+```sh
+http://localhost:8080
+```
+
+## ¿Cómo funciona?
+
+### 1. Scraping de Tottus con Puppeteer
+
+- Se abre la URL de la categoría "Despensa" en Tottus.
+- Se obtiene el número total de páginas.
+- Se navega por cada página, extrayendo datos de los productos:
+  - **Nombre**
+  - **Marca**
+  - **Imagen (URL)**
+  - **Categoría**
+  - **Subcategoría**
+- Se asegura que las imágenes estén completamente cargadas antes de extraer la información.
+
+### 2. Análisis de imágenes con Gemini AI
+
+- Se convierte la imagen a **Base64**.
+- Se envía la imagen a la **API de Gemini** junto con la consulta:  
+  *"¿Es este empaque flexible?"*.
+- Se recibe una respuesta que indica si el empaque es **flexible** o **no**.
+
+### 3. Almacenamiento de datos
+
+- Los productos extraídos y su análisis son guardados en un archivo **JSON** en la carpeta `data/`.
+
+### 4. Servidor Express
+
+- El servidor **Express** expone una ruta en `/` que ejecuta el scraping y devuelve los datos en formato **JSON**.
 
 
