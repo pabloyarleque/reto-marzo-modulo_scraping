@@ -13,7 +13,7 @@ export async function analizarImagenGemini(urlImagen) {
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "¿Es este empaque flexible?" },
+                        { text: "Analiza la imagen proporcionada y determina si el empaque es flexible o rígido.Un empaque flexible es aquel hecho de materiales como plástico delgado, bolsas resellables, papel aluminio o films plásticos. Un empaque rígido es aquel que mantiene su forma, como botellas de plástico grueso, cajas de cartón o frascos de vidrio.¿Es este empaque flexible?" },
                         { inlineData: { mimeType: "image/jpeg", data: imagenBase64.split(',')[1] } }
                     ]
                 }]
